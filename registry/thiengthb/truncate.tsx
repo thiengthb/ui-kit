@@ -5,9 +5,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { cn } from '@/lib/utils';
 
 /**
- * Cắt 1 dòng (truncate) THÔNG MINH: chỉ bật tooltip khi chữ thật sự bị tràn — không phình
- * tooltip vô nghĩa cho chữ ngắn. Tooltip hiện full nội dung ngay dưới con trỏ (side mặc định
- * "bottom"). Đo tràn qua scrollWidth + ResizeObserver.
+ * SMART single-line truncate: only shows the tooltip when the text actually overflows — no
+ * pointless tooltip for short text. The tooltip shows the full content right below the cursor
+ * (default side "bottom"). Overflow is measured via scrollWidth + ResizeObserver.
  */
 export function Truncate({
   children,
@@ -16,7 +16,7 @@ export function Truncate({
   side = 'bottom',
 }: {
   children: ReactNode;
-  /** nội dung đầy đủ hiện trong tooltip; mặc định = children (dùng khi children là chuỗi) */
+  /** full content shown in the tooltip; defaults to children (use when children is a string) */
   full?: ReactNode;
   className?: string;
   side?: 'top' | 'right' | 'bottom' | 'left';

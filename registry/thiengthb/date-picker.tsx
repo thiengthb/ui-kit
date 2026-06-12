@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-// Helper ngày ĐỊA PHƯƠNG, nội tuyến để component tự chứa (không phụ thuộc lib ngoài).
+// LOCAL date helpers, inlined so the component is self-contained (no external lib dependency).
 function toDateStr(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -21,8 +21,8 @@ function isValidDateStr(s: string): boolean {
 }
 
 /**
- * DatePicker dùng CHUNG — Popover + shadcn Calendar.
- * value/onChange là chuỗi "YYYY-MM-DD" ĐỊA PHƯƠNG (không UTC). Mặc định nút `w-full` để fill grid.
+ * SHARED DatePicker — Popover + shadcn Calendar.
+ * value/onChange is a LOCAL "YYYY-MM-DD" string (not UTC). The button is `w-full` by default to fill the grid.
  */
 export function DatePicker({
   value,
@@ -37,7 +37,7 @@ export function DatePicker({
   placeholder?: string;
   className?: string;
   disabled?: boolean;
-  /** Cho phép bỏ chọn (về null) */
+  /** Allow clearing the selection (back to null) */
   clearable?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);

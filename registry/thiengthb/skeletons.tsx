@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * Khối skeleton tái dùng cho loading.tsx + <Suspense> — khớp bộ card/row chuẩn (rounded-lg +
- * border-border/70), giúp chuyển trang không trắng/khựng. Tĩnh, chỉ animate-pulse.
+ * Reusable skeleton blocks for loading.tsx + <Suspense> — match the standard card/row set (rounded-lg +
+ * border-border/70), so page transitions don't flash blank/stutter. Static, only animate-pulse.
  */
 
 export function PageHeaderSkeleton() {

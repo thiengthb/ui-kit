@@ -1,51 +1,52 @@
-# @thiengthb/ui-kit — registry shadcn dùng chung
+# @thiengthb/ui-kit — shared shadcn registry
 
-Bộ component frontend **dùng chung** cho mọi project React/Next trong `D:\Projects\MiniServer\`,
-phân phối kiểu **shadcn custom registry** — tức **copy-in, KHÔNG phải runtime dependency**.
+A **shared** frontend component set for every React/Next project in `D:\Projects\MiniServer\`,
+distributed as a **shadcn custom registry** — i.e. **copy-in, NOT a runtime dependency**.
 
-> **Vì sao copy-in chứ không phải npm package?** Kiến trúc MiniServer: mỗi project = repo + Docker
-> image độc lập, NUC chỉ pull. Một runtime dep (`@thiengthb/ui`) sẽ bắt nuôi private registry + pipeline
-> publish + nâng version đồng loạt qua nhiều repo, và đi ngược triết lý shadcn ("component là code bạn
-> sở hữu, không phải dep"). Copy-in: mỗi project kéo source về, **tự sở hữu và sửa được**, không coupling
-> lúc chạy. Đánh đổi: sửa một chỗ KHÔNG tự lan — khi có bản vá quan trọng thì `shadcn add` lại.
+> **Why copy-in rather than an npm package?** MiniServer architecture: each project = an independent
+> repo + Docker image, the NUC only pulls. A runtime dep (`@thiengthb/ui`) would force maintaining a
+> private registry + publish pipeline + bumping versions across many repos at once, and goes against
+> the shadcn philosophy ("a component is code you own, not a dep"). Copy-in: each project pulls the
+> source down, **owns and can edit it**, with no runtime coupling. The trade-off: a fix in one place
+> does NOT propagate automatically — when there's an important patch, `shadcn add` it again.
 
-## Có gì trong registry
+## What's in the registry
 
-| Item | Mô tả | shadcn cần thêm | Ghi chú |
+| Item | Description | shadcn deps to add | Notes |
 | --- | --- | --- | --- |
-| `truncate` | Cắt 1 dòng thông minh, chỉ bật tooltip khi tràn | `tooltip` | |
-| `empty-state` | Trạng thái rỗng dùng chung | – | |
-| `icon-tooltip` | Tooltip read-only cho nút-icon (thay `title=`) | `tooltip` | |
-| `info-hint` | Icon ⓘ mở Popover giải thích (hợp cảm ứng + a11y) | `popover` | |
-| `reveal` | Hiện dần khi vào viewport, CSS thuần | – | |
-| `field` | Bọc nhãn + control + hint/info cho form | (kéo kèm `info-hint`) | |
-| `date-picker` | Popover + Calendar, value `YYYY-MM-DD` địa phương | `button` `calendar` `popover` | npm `date-fns`; helper nội tuyến |
-| `time-picker` | Input + Popover mốc giờ, value `HH:MM` | `input` `popover` `scroll-area` | helper nội tuyến |
-| `skeletons` | Bộ skeleton khớp card chuẩn cho `loading.tsx` | `skeleton` | |
-| `page-header` | Header trang đồng nhất (eyebrow + h1 + action + back) | (kéo kèm `info-hint`) | ⚠️ **Next-only** (`next/link`) |
+| `truncate` | Smart single-line clamp, only shows the tooltip on overflow | `tooltip` | |
+| `empty-state` | Shared empty state | – | |
+| `icon-tooltip` | Read-only tooltip for icon buttons (replaces `title=`) | `tooltip` | |
+| `info-hint` | ⓘ icon opening an explanation Popover (touch + a11y friendly) | `popover` | |
+| `reveal` | Reveal gradually on entering the viewport, pure CSS | – | |
+| `field` | Wraps label + control + hint/info for forms | (pulls in `info-hint`) | |
+| `date-picker` | Popover + Calendar, value `YYYY-MM-DD` local | `button` `calendar` `popover` | npm `date-fns`; inline helpers |
+| `time-picker` | Input + Popover time presets, value `HH:MM` | `input` `popover` `scroll-area` | inline helpers |
+| `skeletons` | Skeleton set matching the standard card for `loading.tsx` | `skeleton` | |
+| `page-header` | Consistent page header (eyebrow + h1 + action + back) | (pulls in `info-hint`) | ⚠️ **Next-only** (`next/link`) |
 
-Nguồn các item nằm ở `registry/thiengthb/*.tsx`. Mọi item giả định project tiêu thụ đã có shadcn
-(`@/lib/utils` có `cn`, alias `@/`) — đúng như mọi frontend MiniServer.
+The item sources live in `registry/thiengthb/*.tsx`. Every item assumes the consuming project already
+has shadcn (`@/lib/utils` exposes `cn`, the `@/` alias) — just like every MiniServer frontend.
 
-## 1) Build registry (tại folder này)
+## 1) Build the registry (in this folder)
 
-`shadcn build` đọc `registry.json` → sinh JSON nhúng source ra `public/r/<name>.json` (đây là thứ
-project khác fetch về).
+`shadcn build` reads `registry.json` → generates JSON embedding the source into `public/r/<name>.json`
+(this is what other projects fetch).
 
 ```bash
 cd D:\Projects\MiniServer\ui-kit
-npx shadcn@latest build      # ra public/r/*.json
+npx shadcn@latest build      # outputs public/r/*.json
 ```
 
-Chạy lại lệnh này mỗi khi sửa/thêm component, rồi commit `public/r/`.
+Re-run this command whenever you edit/add a component, then commit `public/r/`.
 
-## 2) Tiêu thụ ở project khác
+## 2) Consuming from another project
 
-Có 2 cách, chọn theo nhu cầu:
+There are 2 approaches, pick per your needs:
 
-### Cách A — đường dẫn LOCAL (zero-infra, dùng được ngay)
+### Approach A — LOCAL path (zero-infra, usable right away)
 
-Vì mọi project ở cùng máy, trỏ thẳng vào file JSON đã build:
+Since every project is on the same machine, point straight at the built JSON file:
 
 ```bash
 cd D:\Projects\MiniServer\journal
@@ -53,13 +54,13 @@ npx shadcn@latest add ../ui-kit/public/r/truncate.json
 npx shadcn@latest add ../ui-kit/public/r/empty-state.json
 ```
 
-shadcn tự copy component vào đúng `target`, cài npm dep (vd `lucide-react`) và kéo shadcn dep
-(`tooltip`, `popover`) nếu thiếu.
+shadcn copies the component to the right `target`, installs the npm dep (e.g. `lucide-react`) and pulls
+the shadcn deps (`tooltip`, `popover`) if missing.
 
-### Cách B — registry có namespace (khi muốn dùng từ máy khác / gọn hơn)
+### Approach B — namespaced registry (when you want to use it from another machine / more concise)
 
-Đẩy `ui-kit` lên GitHub **public** (`thiengthb/ui-kit` — chỉ là source UI, không secret), rồi khai
-báo registry trong `components.json` của project tiêu thụ:
+Push `ui-kit` to GitHub **public** (`thiengthb/ui-kit` — it's only UI source, no secret), then declare
+the registry in the consuming project's `components.json`:
 
 ```jsonc
 {
@@ -69,36 +70,37 @@ báo registry trong `components.json` của project tiêu thụ:
 }
 ```
 
-Sau đó:
+Then:
 
 ```bash
 npx shadcn@latest add @thiengthb/truncate
-npx shadcn@latest add @thiengthb/page-header   # tự kéo kèm @thiengthb/info-hint
+npx shadcn@latest add @thiengthb/page-header   # automatically pulls in @thiengthb/info-hint
 ```
 
-> `page-header` khai báo `registryDependencies: ["@thiengthb/info-hint"]` nên CÁCH B sẽ tự kéo
-> `info-hint`. Với CÁCH A, hãy `add` luôn `info-hint.json` trước page-header.
+> `page-header` declares `registryDependencies: ["@thiengthb/info-hint"]`, so APPROACH B pulls in
+> `info-hint` automatically. With APPROACH A, `add` `info-hint.json` before page-header.
 
-## 3) Thêm component mới vào registry
+## 3) Adding a new component to the registry
 
-1. Tạo `registry/thiengthb/<ten>.tsx` (giữ import `@/lib/utils`, `@/components/ui/*` như trong app).
-2. Thêm một mục vào `items[]` trong `registry.json`: khai báo `dependencies` (npm) + `registryDependencies`
-   (shadcn primitive hoặc `@thiengthb/<item>` khác) + `files[].target`.
+1. Create `registry/thiengthb/<name>.tsx` (keep the `@/lib/utils`, `@/components/ui/*` imports as in the app).
+2. Add an entry to `items[]` in `registry.json`: declare `dependencies` (npm) + `registryDependencies`
+   (shadcn primitives or other `@thiengthb/<item>`) + `files[].target`.
 3. `npx shadcn@latest build` → commit.
 
-**Chỉ đưa vào đây thứ ỔN ĐỊNH + KHÔNG gắn sản phẩm cụ thể.** KHÔNG đưa `app-shell`, `streak-chip`,
-`day-nav`, `mood-picker`… (đó là UI riêng từng app).
+**Only put STABLE things here that are NOT tied to a specific product.** Do NOT add `app-shell`, `streak-chip`,
+`day-nav`, `mood-picker`… (those are per-app UI).
 
-## Gotcha đã biết
+## Known gotcha
 
-- **`date-picker` kéo shadcn `calendar`** → `calendar` lại phụ thuộc **`react-day-picker`**. Template
-  `calendar` của shadcn phải KHỚP major version của `react-day-picker` đang cài (v8 dùng `classNames.table`,
-  v9/v10 đổi API → lệch sẽ lỗi `'table' does not exist in type Partial<ClassNames>`). Nếu trúng: cài lại
-  `calendar` đúng version (`npx shadcn add calendar`) cho khớp `react-day-picker` của project, hoặc bỏ
-  `date-picker` nếu không dùng. (Đây là vấn đề shadcn↔react-day-picker, không phải của registry này.)
+- **`date-picker` pulls shadcn `calendar`** → `calendar` in turn depends on **`react-day-picker`**. The
+  shadcn `calendar` template must MATCH the major version of the installed `react-day-picker` (v8 uses
+  `classNames.table`, v9/v10 changed the API → a mismatch errors with `'table' does not exist in type
+  Partial<ClassNames>`). If you hit it: reinstall `calendar` at the right version (`npx shadcn add calendar`)
+  to match the project's `react-day-picker`, or drop `date-picker` if unused. (This is a shadcn↔react-day-picker
+  issue, not one of this registry.)
 
-## Quan hệ với luật chung
+## Relation to the shared rules
 
-Đây là hiện thực hóa mục **"Frontend — chuẩn kỹ thuật chung"** trong `MiniServer/CLAUDE.md`
-(skill `/react-ui-craft`): "build cái tái dùng MỘT lần". Component ở đây trích từ app `todo` (đã chạy
-thật theo §12) — `todo` là implementation tham chiếu.
+This realizes the **"Frontend — shared engineering standard"** section in `MiniServer/CLAUDE.md`
+(skill `/react-ui-craft`): "build the reusable thing ONCE". The components here are extracted from the
+`todo` app (actually running per §12) — `todo` is the reference implementation.

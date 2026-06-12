@@ -5,28 +5,28 @@ import { cn } from '@/lib/utils';
 import { InfoHint } from '@/components/info-hint';
 
 interface PageHeaderProps {
-  /** Dòng nhỏ phía trên tiêu đề (eyebrow) */
+  /** Small line above the title (eyebrow) */
   eyebrow?: string;
   title: ReactNode;
-  /** Mô tả ngắn dưới tiêu đề. Phần giải thích DÀI nên dùng `info` thay vì `description`. */
+  /** Short description below the title. For a LONG explanation use `info` instead of `description`. */
   description?: ReactNode;
-  /** Giải thích dài → icon ⓘ cạnh tiêu đề (Popover) — giữ tiêu đề sạch */
+  /** Long explanation → ⓘ icon next to the title (Popover) — keeps the title clean */
   info?: ReactNode;
-  /** Hành động cấp trang, căn phải (vd nút "Tạo mới") */
+  /** Page-level action, right-aligned (e.g. a "Create" button) */
   action?: ReactNode;
-  /** Link "‹ …" cho trang con — đóng vai breadcrumb-nhẹ */
+  /** "‹ …" link for sub-pages — acts as a light breadcrumb */
   backHref?: string;
   backLabel?: string;
-  /** Cho phép tiêu đề viết hoa chữ cái đầu */
+  /** Allow capitalizing the first letter of the title */
   titleClassName?: string;
   className?: string;
 }
 
 /**
- * Header trang dùng chung: eyebrow + h1 + mô tả + action phải, kèm back-link tùy chọn.
- * Mọi trang dùng cùng component này để nhịp/độ lớn tiêu đề đồng nhất.
+ * Shared page header: eyebrow + h1 + description + right-aligned action, with an optional back-link.
+ * Every page uses this same component so title rhythm/size stays consistent.
  *
- * ⚠️ NEXT-ONLY: dùng `next/link`. Trong Vite SPA hãy thay bằng <Link> của react-router.
+ * ⚠️ NEXT-ONLY: uses `next/link`. In a Vite SPA, replace it with react-router's <Link>.
  */
 export function PageHeader({
   eyebrow,

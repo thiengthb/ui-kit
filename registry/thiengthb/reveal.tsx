@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Hiện dần (fade + trượt lên) khi phần tử vào viewport — motion thuần CSS.
- * Tôn trọng "prefers-reduced-motion": hiện ngay, không animate.
+ * Reveal gradually (fade + slide up) when the element enters the viewport — pure CSS motion.
+ * Respects "prefers-reduced-motion": shows immediately, no animation.
  */
 export function Reveal({
   children,
@@ -13,7 +13,7 @@ export function Reveal({
   className,
 }: {
   children: ReactNode;
-  /** trễ (ms) để xếp tầng hiệu ứng giữa các phần tử kề nhau */
+  /** delay (ms) to stagger the effect between adjacent elements */
   delay?: number;
   className?: string;
 }) {

@@ -6,14 +6,14 @@ interface EmptyStateProps {
   icon?: LucideIcon;
   title: string;
   description?: ReactNode;
-  /** Hành động gợi ý (vd nút tạo mới) */
+  /** Suggested action (e.g. a create button) */
   action?: ReactNode;
   className?: string;
 }
 
 /**
- * Trạng thái rỗng dùng chung — khung viền nét đứt + icon + tiêu đề + mô tả.
- * Thống nhất mọi chỗ "chưa có dữ liệu" để không mỗi trang một kiểu.
+ * Shared empty state — dashed border frame + icon + title + description.
+ * Unifies every "no data yet" spot so pages don't each invent their own style.
  */
 export function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
   return (

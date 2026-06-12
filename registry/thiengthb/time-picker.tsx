@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-// Helper giờ "HH:MM", nội tuyến để component tự chứa (không phụ thuộc lib ngoài).
+// "HH:MM" time helpers, inlined so the component is self-contained (no external lib dependency).
 function minutesToHm(m: number): string {
   const h = Math.floor(m / 60);
   const min = m % 60;
@@ -22,8 +22,8 @@ function isValidHm(s: string): boolean {
 }
 
 /**
- * TimePicker dùng CHUNG — Input gõ tay + Popover các mốc giờ (mặc định 15′).
- * value/onChange là chuỗi "HH:MM" ĐỊA PHƯƠNG. Mặc định `w-full` để fill grid; gõ tay vẫn được.
+ * SHARED TimePicker — typed Input + Popover of time presets (default 15′).
+ * value/onChange is a LOCAL "HH:MM" string. `w-full` by default to fill the grid; manual typing still works.
  */
 export function TimePicker({
   value,

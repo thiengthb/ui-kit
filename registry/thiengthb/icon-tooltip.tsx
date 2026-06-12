@@ -4,8 +4,8 @@ import { type ReactNode } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 /**
- * Tooltip read-only cho nút-icon — thay mọi `title=`.
- * Chỉ cho nội dung NGẮN khi hover/focus; phần giải thích dài/khái niệm dùng <InfoHint> (Popover).
+ * Read-only tooltip for icon buttons — replaces every `title=`.
+ * Only for SHORT content on hover/focus; for long/conceptual explanations use <InfoHint> (Popover).
  */
 export function IconTooltip({
   label,
