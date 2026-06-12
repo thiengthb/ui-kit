@@ -1,0 +1,150 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "thiengthb",
+  "homepage": "https://github.com/thiengthb/ui-kit",
+  "items": [
+    {
+      "name": "truncate",
+      "type": "registry:ui",
+      "title": "Truncate",
+      "description": "Cắt 1 dòng thông minh — chỉ bật tooltip khi chữ thật sự tràn.",
+      "registryDependencies": ["tooltip"],
+      "files": [
+        {
+          "path": "registry/thiengthb/truncate.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/truncate.tsx"
+        }
+      ]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:component",
+      "title": "Empty State",
+      "description": "Trạng thái rỗng dùng chung: viền nét đứt + icon + tiêu đề + mô tả + action.",
+      "dependencies": ["lucide-react"],
+      "files": [
+        {
+          "path": "registry/thiengthb/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/empty-state.tsx"
+        }
+      ]
+    },
+    {
+      "name": "icon-tooltip",
+      "type": "registry:component",
+      "title": "Icon Tooltip",
+      "description": "Tooltip read-only cho nút-icon — thay mọi title=. Nội dung ngắn khi hover/focus.",
+      "registryDependencies": ["tooltip"],
+      "files": [
+        {
+          "path": "registry/thiengthb/icon-tooltip.tsx",
+          "type": "registry:component",
+          "target": "components/icon-tooltip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "info-hint",
+      "type": "registry:component",
+      "title": "Info Hint",
+      "description": "Icon ⓘ mở Popover khi bấm/chạm — thay mô tả dài, hợp cảm ứng + a11y.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["popover"],
+      "files": [
+        {
+          "path": "registry/thiengthb/info-hint.tsx",
+          "type": "registry:component",
+          "target": "components/info-hint.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reveal",
+      "type": "registry:component",
+      "title": "Reveal",
+      "description": "Hiện dần (fade + trượt lên) khi vào viewport, CSS thuần, tôn trọng reduced-motion.",
+      "files": [
+        {
+          "path": "registry/thiengthb/reveal.tsx",
+          "type": "registry:component",
+          "target": "components/reveal.tsx"
+        }
+      ]
+    },
+    {
+      "name": "field",
+      "type": "registry:component",
+      "title": "Field",
+      "description": "Bọc nhãn + control + hint/info cho form; ô fill grid sm:grid-cols-2.",
+      "registryDependencies": ["@thiengthb/info-hint"],
+      "files": [
+        {
+          "path": "registry/thiengthb/field.tsx",
+          "type": "registry:component",
+          "target": "components/field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "Popover + Calendar, value chuỗi 'YYYY-MM-DD' địa phương. Helper ngày nội tuyến.",
+      "dependencies": ["date-fns", "lucide-react"],
+      "registryDependencies": ["button", "calendar", "popover"],
+      "files": [
+        {
+          "path": "registry/thiengthb/date-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/date-picker.tsx"
+        }
+      ]
+    },
+    {
+      "name": "time-picker",
+      "type": "registry:ui",
+      "title": "Time Picker",
+      "description": "Input gõ tay + Popover mốc giờ (15′), value 'HH:MM' địa phương. Helper giờ nội tuyến.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["input", "popover", "scroll-area"],
+      "files": [
+        {
+          "path": "registry/thiengthb/time-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/time-picker.tsx"
+        }
+      ]
+    },
+    {
+      "name": "skeletons",
+      "type": "registry:component",
+      "title": "Skeletons",
+      "description": "Bộ skeleton (PageHeader/Card/List/Grid) khớp bộ card chuẩn — cho loading.tsx.",
+      "registryDependencies": ["skeleton"],
+      "files": [
+        {
+          "path": "registry/thiengthb/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/skeletons.tsx"
+        }
+      ]
+    },
+    {
+      "name": "page-header",
+      "type": "registry:component",
+      "title": "Page Header",
+      "description": "Header trang đồng nhất: eyebrow + h1 + mô tả + action + back-link. ⚠️ Next-only (next/link).",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@thiengthb/info-hint"],
+      "files": [
+        {
+          "path": "registry/thiengthb/page-header.tsx",
+          "type": "registry:component",
+          "target": "components/page-header.tsx"
+        }
+      ]
+    }
+  ]
+}

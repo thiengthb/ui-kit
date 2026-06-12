@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "time-picker",
+  "title": "Time Picker",
+  "description": "Input gõ tay + Popover mốc giờ (15′), value 'HH:MM' địa phương. Helper giờ nội tuyến.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "input",
+    "popover",
+    "scroll-area"
+  ],
+  "files": [
+    {
+      "path": "registry/thiengthb/time-picker.tsx",
+      "content": "'use client';\n\nimport * as React from 'react';\nimport { Clock } from 'lucide-react';\nimport { cn } from '@/lib/utils';\nimport { Input } from '@/components/ui/input';\nimport { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';\nimport { ScrollArea } from '@/components/ui/scroll-area';\n\n// Helper giờ \"HH:MM\", nội tuyến để component tự chứa (không phụ thuộc lib ngoài).\nfunction minutesToHm(m: number): string {\n  const h = Math.floor(m / 60);\n  const min = m % 60;\n  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;\n}\nfunction isValidHm(s: string): boolean {\n  const match = /^(\\d{1,2}):(\\d{2})$/.exec(s);\n  if (!match) return false;\n  const h = Number(match[1]);\n  const min = Number(match[2]);\n  return h >= 0 && h <= 23 && min >= 0 && min <= 59;\n}\n\n/**\n * TimePicker dùng CHUNG — Input gõ tay + Popover các mốc giờ (mặc định 15′).\n * value/onChange là chuỗi \"HH:MM\" ĐỊA PHƯƠNG. Mặc định `w-full` để fill grid; gõ tay vẫn được.\n */\nexport function TimePicker({\n  value,\n  onChange,\n  step = 15,\n  className,\n  disabled,\n  ariaLabel,\n}: {\n  value: string;\n  onChange: (value: string) => void;\n  step?: number;\n  className?: string;\n  disabled?: boolean;\n  ariaLabel?: string;\n}) {\n  const [open, setOpen] = React.useState(false);\n\n  const options = React.useMemo(() => {\n    const out: string[] = [];\n    for (let m = 0; m < 24 * 60; m += step) out.push(minutesToHm(m));\n    return out;\n  }, [step]);\n\n  const invalid = value !== '' && !isValidHm(value);\n\n  return (\n    <Popover open={open} onOpenChange={setOpen}>\n      <PopoverAnchor asChild>\n        <div className={cn('relative', className)}>\n          <Clock className=\"pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground\" />\n          <Input\n            type=\"text\"\n            inputMode=\"numeric\"\n            aria-label={ariaLabel}\n            aria-invalid={invalid}\n            value={value}\n            disabled={disabled}\n            placeholder=\"--:--\"\n            onChange={(e) => onChange(e.target.value)}\n            onFocus={() => setOpen(true)}\n            onClick={() => setOpen(true)}\n            className=\"w-full pl-8 tabular-nums\"\n          />\n        </div>\n      </PopoverAnchor>\n      <PopoverContent\n        align=\"start\"\n        onOpenAutoFocus={(e) => e.preventDefault()}\n        className=\"w-[var(--radix-popper-anchor-width)] min-w-28 p-1\"\n      >\n        <ScrollArea className=\"h-56\">\n          <div className=\"flex flex-col\">\n            {options.map((opt) => (\n              <button\n                key={opt}\n                type=\"button\"\n                onClick={() => {\n                  onChange(opt);\n                  setOpen(false);\n                }}\n                className={cn(\n                  'rounded-md px-2 py-1.5 text-left text-sm tabular-nums transition-colors hover:bg-muted',\n                  value === opt && 'bg-muted font-medium',\n                )}\n              >\n                {opt}\n              </button>\n            ))}\n          </div>\n        </ScrollArea>\n      </PopoverContent>\n    </Popover>\n  );\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/time-picker.tsx"
+    }
+  ],
+  "type": "registry:ui"
+}

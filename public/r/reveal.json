@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "reveal",
+  "title": "Reveal",
+  "description": "Hiện dần (fade + trượt lên) khi vào viewport, CSS thuần, tôn trọng reduced-motion.",
+  "files": [
+    {
+      "path": "registry/thiengthb/reveal.tsx",
+      "content": "'use client';\n\nimport { useEffect, useRef, useState, type ReactNode } from 'react';\nimport { cn } from '@/lib/utils';\n\n/**\n * Hiện dần (fade + trượt lên) khi phần tử vào viewport — motion thuần CSS.\n * Tôn trọng \"prefers-reduced-motion\": hiện ngay, không animate.\n */\nexport function Reveal({\n  children,\n  delay = 0,\n  className,\n}: {\n  children: ReactNode;\n  /** trễ (ms) để xếp tầng hiệu ứng giữa các phần tử kề nhau */\n  delay?: number;\n  className?: string;\n}) {\n  const ref = useRef<HTMLDivElement>(null);\n  const [shown, setShown] = useState(false);\n\n  useEffect(() => {\n    const el = ref.current;\n    if (!el) return;\n    const io = new IntersectionObserver(\n      ([entry]) => {\n        if (entry.isIntersecting) {\n          setShown(true);\n          io.disconnect();\n        }\n      },\n      { threshold: 0.15 },\n    );\n    io.observe(el);\n    return () => io.disconnect();\n  }, []);\n\n  return (\n    <div\n      ref={ref}\n      style={{ transitionDelay: `${delay}ms` }}\n      className={cn(\n        'transition-all duration-700 ease-out motion-reduce:transition-none',\n        shown ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',\n        className,\n      )}\n    >\n      {children}\n    </div>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/reveal.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

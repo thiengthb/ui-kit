@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "icon-tooltip",
+  "title": "Icon Tooltip",
+  "description": "Tooltip read-only cho nút-icon — thay mọi title=. Nội dung ngắn khi hover/focus.",
+  "registryDependencies": [
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "registry/thiengthb/icon-tooltip.tsx",
+      "content": "'use client';\n\nimport { type ReactNode } from 'react';\nimport { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';\n\n/**\n * Tooltip read-only cho nút-icon — thay mọi `title=`.\n * Chỉ cho nội dung NGẮN khi hover/focus; phần giải thích dài/khái niệm dùng <InfoHint> (Popover).\n */\nexport function IconTooltip({\n  label,\n  side = 'top',\n  children,\n}: {\n  label: ReactNode;\n  side?: 'top' | 'right' | 'bottom' | 'left';\n  children: ReactNode;\n}) {\n  return (\n    <Tooltip>\n      <TooltipTrigger asChild>{children}</TooltipTrigger>\n      <TooltipContent side={side}>{label}</TooltipContent>\n    </Tooltip>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/icon-tooltip.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

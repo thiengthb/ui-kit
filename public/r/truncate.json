@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "truncate",
+  "title": "Truncate",
+  "description": "Cắt 1 dòng thông minh — chỉ bật tooltip khi chữ thật sự tràn.",
+  "registryDependencies": [
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "registry/thiengthb/truncate.tsx",
+      "content": "'use client';\n\nimport { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';\nimport { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';\nimport { cn } from '@/lib/utils';\n\n/**\n * Cắt 1 dòng (truncate) THÔNG MINH: chỉ bật tooltip khi chữ thật sự bị tràn — không phình\n * tooltip vô nghĩa cho chữ ngắn. Tooltip hiện full nội dung ngay dưới con trỏ (side mặc định\n * \"bottom\"). Đo tràn qua scrollWidth + ResizeObserver.\n */\nexport function Truncate({\n  children,\n  full,\n  className,\n  side = 'bottom',\n}: {\n  children: ReactNode;\n  /** nội dung đầy đủ hiện trong tooltip; mặc định = children (dùng khi children là chuỗi) */\n  full?: ReactNode;\n  className?: string;\n  side?: 'top' | 'right' | 'bottom' | 'left';\n}) {\n  const ref = useRef<HTMLSpanElement>(null);\n  const [overflow, setOverflow] = useState(false);\n\n  const check = useCallback(() => {\n    const el = ref.current;\n    if (el) setOverflow(el.scrollWidth > el.clientWidth + 1);\n  }, []);\n\n  useEffect(() => {\n    check();\n    const el = ref.current;\n    if (!el) return;\n    const ro = new ResizeObserver(check);\n    ro.observe(el);\n    return () => ro.disconnect();\n  }, [check, children]);\n\n  const span = (\n    <span ref={ref} className={cn('block min-w-0 truncate', className)}>\n      {children}\n    </span>\n  );\n\n  if (!overflow) return span;\n\n  return (\n    <Tooltip>\n      <TooltipTrigger asChild>{span}</TooltipTrigger>\n      <TooltipContent side={side} className=\"max-w-xs break-words whitespace-normal\">\n        {full ?? children}\n      </TooltipContent>\n    </Tooltip>\n  );\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/truncate.tsx"
+    }
+  ],
+  "type": "registry:ui"
+}
