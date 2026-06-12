@@ -89,6 +89,14 @@ npx shadcn@latest add @thiengthb/page-header   # tự kéo kèm @thiengthb/info-
 **Chỉ đưa vào đây thứ ỔN ĐỊNH + KHÔNG gắn sản phẩm cụ thể.** KHÔNG đưa `app-shell`, `streak-chip`,
 `day-nav`, `mood-picker`… (đó là UI riêng từng app).
 
+## Gotcha đã biết
+
+- **`date-picker` kéo shadcn `calendar`** → `calendar` lại phụ thuộc **`react-day-picker`**. Template
+  `calendar` của shadcn phải KHỚP major version của `react-day-picker` đang cài (v8 dùng `classNames.table`,
+  v9/v10 đổi API → lệch sẽ lỗi `'table' does not exist in type Partial<ClassNames>`). Nếu trúng: cài lại
+  `calendar` đúng version (`npx shadcn add calendar`) cho khớp `react-day-picker` của project, hoặc bỏ
+  `date-picker` nếu không dùng. (Đây là vấn đề shadcn↔react-day-picker, không phải của registry này.)
+
 ## Quan hệ với luật chung
 
 Đây là hiện thực hóa mục **"Frontend — chuẩn kỹ thuật chung"** trong `MiniServer/CLAUDE.md`
