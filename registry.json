@@ -132,6 +132,21 @@
       ]
     },
     {
+      "name": "data-pagination",
+      "type": "registry:ui",
+      "title": "Data Pagination",
+      "description": "Điều khiển phân trang controlled (page/pageCount/onPageChange) + cửa sổ trang dấu …; dùng cho phân trang client hoặc server.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "registry/thiengthb/data-pagination.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-pagination.tsx"
+        }
+      ]
+    },
+    {
       "name": "page-header",
       "type": "registry:component",
       "title": "Page Header",

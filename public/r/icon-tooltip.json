@@ -9,7 +9,7 @@
   "files": [
     {
       "path": "registry/thiengthb/icon-tooltip.tsx",
-      "content": "'use client';\n\nimport { type ReactNode } from 'react';\nimport { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';\n\n/**\n * Read-only tooltip for icon buttons — replaces every `title=`.\n * Only for SHORT content on hover/focus; for long/conceptual explanations use <InfoHint> (Popover).\n */\nexport function IconTooltip({\n  label,\n  side = 'top',\n  children,\n}: {\n  label: ReactNode;\n  side?: 'top' | 'right' | 'bottom' | 'left';\n  children: ReactNode;\n}) {\n  return (\n    <Tooltip>\n      <TooltipTrigger asChild>{children}</TooltipTrigger>\n      <TooltipContent side={side}>{label}</TooltipContent>\n    </Tooltip>\n  );\n}\n",
+      "content": "'use client';\r\n\r\nimport { type ReactNode } from 'react';\r\nimport { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';\r\n\r\n/**\r\n * Read-only tooltip for icon buttons — replaces every `title=`.\r\n * Only for SHORT content on hover/focus; for long/conceptual explanations use <InfoHint> (Popover).\r\n */\r\nexport function IconTooltip({\r\n  label,\r\n  side = 'top',\r\n  children,\r\n}: {\r\n  label: ReactNode;\r\n  side?: 'top' | 'right' | 'bottom' | 'left';\r\n  children: ReactNode;\r\n}) {\r\n  return (\r\n    <Tooltip>\r\n      <TooltipTrigger asChild>{children}</TooltipTrigger>\r\n      <TooltipContent side={side}>{label}</TooltipContent>\r\n    </Tooltip>\r\n  );\r\n}\r\n",
       "type": "registry:component",
       "target": "components/icon-tooltip.tsx"
     }
