@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "info-tooltip",
+  "title": "Info Tooltip",
+  "description": "Icon ⓘ hiện mô tả bằng tooltip khi hover/focus — bản minimal, tự wrap + clamp; dùng cho tiêu đề/nhãn.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "registry/thiengthb/info-tooltip.tsx",
+      "content": "'use client';\n\nimport { type ReactNode } from 'react';\nimport { Info } from 'lucide-react';\nimport { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';\nimport { cn } from '@/lib/utils';\n\n/**\n * ⓘ icon that reveals a description in a HOVER/FOCUS tooltip — the minimal-UI alternative to an\n * always-visible description line under a title/label. The tooltip wraps long text and clamps it to\n * a few lines so it never grows into a wall. Opens on hover AND keyboard focus (Radix), so it stays\n * reachable without a pointer. For long rich content / touch-first surfaces prefer the click-Popover\n * variant `info-hint` instead.\n */\nexport function InfoTooltip({\n  children,\n  label = 'Giải thích',\n  className,\n  side = 'top',\n}: {\n  children: ReactNode;\n  /** Accessible name for the trigger (defaults to a generic label). */\n  label?: string;\n  className?: string;\n  side?: 'top' | 'right' | 'bottom' | 'left';\n}) {\n  return (\n    <Tooltip>\n      <TooltipTrigger asChild>\n        <button\n          type=\"button\"\n          aria-label={label}\n          className={cn(\n            'inline-flex size-4 shrink-0 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:text-foreground focus-visible:text-foreground',\n            className,\n          )}\n        >\n          <Info className=\"size-3.5\" />\n        </button>\n      </TooltipTrigger>\n      <TooltipContent\n        side={side}\n        className=\"max-w-xs text-left leading-relaxed break-words whitespace-normal line-clamp-6\"\n      >\n        {children}\n      </TooltipContent>\n    </Tooltip>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/info-tooltip.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { InfoHint } from '@/components/info-hint';
+import { InfoTooltip } from '@/components/info-tooltip';
 
 interface PageHeaderProps {
   /** Small line above the title (eyebrow) */
@@ -10,7 +10,7 @@ interface PageHeaderProps {
   title: ReactNode;
   /** Short description below the title. For a LONG explanation use `info` instead of `description`. */
   description?: ReactNode;
-  /** Long explanation → ⓘ icon next to the title (Popover) — keeps the title clean */
+  /** Long explanation → ⓘ icon next to the title (hover tooltip) — keeps the title clean */
   info?: ReactNode;
   /** Page-level action, right-aligned (e.g. a "Create" button) */
   action?: ReactNode;
@@ -57,9 +57,9 @@ export function PageHeader({
               {title}
             </h1>
             {info && (
-              <InfoHint label={typeof title === 'string' ? title : 'Giải thích'} side="bottom">
+              <InfoTooltip label={typeof title === 'string' ? title : 'Giải thích'} side="bottom">
                 {info}
-              </InfoHint>
+              </InfoTooltip>
             )}
           </div>
           {description && (

@@ -61,6 +61,21 @@
       ]
     },
     {
+      "name": "info-tooltip",
+      "type": "registry:component",
+      "title": "Info Tooltip",
+      "description": "Icon ⓘ hiện mô tả bằng tooltip khi hover/focus — bản minimal, tự wrap + clamp; dùng cho tiêu đề/nhãn.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["tooltip"],
+      "files": [
+        {
+          "path": "registry/thiengthb/info-tooltip.tsx",
+          "type": "registry:component",
+          "target": "components/info-tooltip.tsx"
+        }
+      ]
+    },
+    {
       "name": "reveal",
       "type": "registry:component",
       "title": "Reveal",
@@ -78,7 +93,7 @@
       "type": "registry:component",
       "title": "Field",
       "description": "Bọc nhãn + control + hint/info cho form; ô fill grid sm:grid-cols-2.",
-      "registryDependencies": ["@thiengthb/info-hint"],
+      "registryDependencies": ["@thiengthb/info-tooltip"],
       "files": [
         {
           "path": "registry/thiengthb/field.tsx",
@@ -150,9 +165,9 @@
       "name": "page-header",
       "type": "registry:component",
       "title": "Page Header",
-      "description": "Header trang đồng nhất: eyebrow + h1 + mô tả + action + back-link. ⚠️ Next-only (next/link).",
+      "description": "Header trang đồng nhất: eyebrow + h1 + mô tả (tooltip ⓘ) + action + back-link. ⚠️ Next-only (next/link).",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@thiengthb/info-hint"],
+      "registryDependencies": ["@thiengthb/info-tooltip"],
       "files": [
         {
           "path": "registry/thiengthb/page-header.tsx",

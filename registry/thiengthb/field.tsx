@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { InfoHint } from '@/components/info-hint';
+import { InfoTooltip } from '@/components/info-tooltip';
 
 /**
  * Shared Field for EVERY form: label + control + hint/info.
@@ -17,7 +17,7 @@ export function Field({
   label: ReactNode;
   /** Short note below the control */
   hint?: ReactNode;
-  /** Long explanation → ⓘ icon next to the label (Popover) */
+  /** Long explanation → ⓘ icon next to the label (hover tooltip) */
   info?: ReactNode;
   className?: string;
   children: ReactNode;
@@ -27,7 +27,7 @@ export function Field({
       <span className="flex items-center gap-1 text-xs text-muted-foreground">
         {label}
         {info && (
-          <InfoHint label={typeof label === 'string' ? label : 'Giải thích'}>{info}</InfoHint>
+          <InfoTooltip label={typeof label === 'string' ? label : 'Giải thích'}>{info}</InfoTooltip>
         )}
       </span>
       {children}
