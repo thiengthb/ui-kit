@@ -15,8 +15,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
 
 /**
  * One navigation entry. `icon` is a lucide icon component (platform rule: icons = lucide only).
@@ -84,20 +84,26 @@ export function AppSidebar({ brand, groups, footer, activePath, className }: App
   return (
     <Sidebar collapsible="icon" className={className}>
       <SidebarHeader>
-        <Link
-          href={brand.href ?? '/'}
-          className="flex items-center gap-2 rounded-md px-2 py-1.5 font-semibold group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
-        >
-          {brand.logo && <span className="flex size-6 shrink-0 items-center justify-center">{brand.logo}</span>}
-          <span className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
-            <span className="truncate leading-tight">{brand.title}</span>
-            {brand.subtitle && (
-              <span className="truncate text-xs font-normal text-muted-foreground">
-                {brand.subtitle}
-              </span>
+        <div className="flex items-center gap-1">
+          <Link
+            href={brand.href ?? '/'}
+            className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 font-semibold group-data-[collapsible=icon]:hidden"
+          >
+            {brand.logo && (
+              <span className="flex size-6 shrink-0 items-center justify-center">{brand.logo}</span>
             )}
-          </span>
-        </Link>
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate leading-tight">{brand.title}</span>
+              {brand.subtitle && (
+                <span className="truncate text-xs font-normal text-muted-foreground">
+                  {brand.subtitle}
+                </span>
+              )}
+            </span>
+          </Link>
+          {/* Collapse/expand toggle lives INSIDE the sidebar; stays visible on the icon rail. */}
+          <SidebarTrigger className="group-data-[collapsible=icon]:mx-auto" />
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
@@ -132,7 +138,11 @@ export function AppSidebar({ brand, groups, footer, activePath, className }: App
         ))}
       </SidebarContent>
 
-      {footer && <SidebarFooter className={cn('gap-2')}>{footer}</SidebarFooter>}
+      {footer && (
+        <SidebarFooter className="gap-2 group-data-[collapsible=icon]:items-center">
+          {footer}
+        </SidebarFooter>
+      )}
       <SidebarRail />
     </Sidebar>
   );
