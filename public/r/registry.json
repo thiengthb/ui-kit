@@ -150,9 +150,9 @@
       "name": "data-pagination",
       "type": "registry:ui",
       "title": "Data Pagination",
-      "description": "Điều khiển phân trang controlled (page/pageCount/onPageChange) + cửa sổ trang dấu …; dùng cho phân trang client hoặc server.",
+      "description": "Điều khiển phân trang controlled (page/pageCount/onPageChange) + cửa sổ trang dấu … + bộ chọn số dòng/trang (tuỳ chọn); dùng cho phân trang client hoặc server.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["button"],
+      "registryDependencies": ["button", "select"],
       "files": [
         {
           "path": "registry/thiengthb/data-pagination.tsx",
