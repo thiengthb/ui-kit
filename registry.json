@@ -175,6 +175,21 @@
           "target": "components/page-header.tsx"
         }
       ]
+    },
+    {
+      "name": "app-sidebar",
+      "type": "registry:component",
+      "title": "App Sidebar",
+      "description": "Sidebar điều hướng config-driven trên nền shadcn sidebar: thu gọn thành thanh icon (⌘/Ctrl+B), tự mở Sheet trên mobile, nhớ trạng thái qua cookie, tooltip khi thu gọn. Nhận brand + groups (icon lucide) + footer. ⚠️ Next-only (next/link + navigation).",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["sidebar"],
+      "files": [
+        {
+          "path": "registry/thiengthb/app-sidebar.tsx",
+          "type": "registry:component",
+          "target": "components/app-sidebar.tsx"
+        }
+      ]
     }
   ]
 }
