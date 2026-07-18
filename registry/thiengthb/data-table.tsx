@@ -3,6 +3,7 @@
 import {
   useCallback,
   useMemo,
+  useRef,
   useSyncExternalStore,
   type Dispatch,
   type ReactNode,
@@ -15,13 +16,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type Column,
   type ColumnDef,
+  type ColumnOrderState,
   type ColumnSizingState,
   type PaginationState,
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, ChevronsUpDown, Columns3, Search } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronsUpDown, Columns3, GripVertical, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -47,11 +50,13 @@ import { cn } from '@/lib/utils';
  * Per-column extras read by the DataTable. Attach via a column's `meta`.
  *   label        — name shown in the "Cột" (show/hide) menu (falls back to a string header)
  *   defaultHidden— column starts hidden until toggled on (e.g. secondary analysis fields)
+ *   noReorder    — column can't be dragged and pins to its edge (e.g. a trailing actions column)
  *   headClassName/cellClassName — extra classes for that column's header / cells
  */
 export interface DataTableColumnMeta {
   label?: string;
   defaultHidden?: boolean;
+  noReorder?: boolean;
   headClassName?: string;
   cellClassName?: string;
 }
@@ -156,6 +161,10 @@ function usePersisted<T>(
 const EMPTY_SORTING: SortingState = [];
 const EMPTY_SIZING: ColumnSizingState = {};
 
+function colId(c: ColumnDef<unknown, unknown>): string {
+  return (c.id ?? (c as { accessorKey?: string }).accessorKey ?? '') as string;
+}
+
 export interface DataTableProps<T> {
   columns: ColumnDef<T, unknown>[];
   data: T[];
@@ -187,15 +196,22 @@ export interface DataTableProps<T> {
   enableMultiSort?: boolean;
   /** Draggable column widths. Default true. */
   enableResizing?: boolean;
+  /** Drag-to-reorder columns (a grip handle appears on each header). Default true. */
+  enableReordering?: boolean;
 }
 
 /**
  * A batteries-included, headless-backed (TanStack Table) data table for CRUD screens. One config-driven
- * component covering: multi-column sort (shift-click to add), draggable column widths, show/hide columns,
- * global search, an app filter slot, and pagination — with the whole view (sort / visible columns / page
- * / size / search) persisted to sessionStorage AND mirrored to the URL (shareable + survives reload;
- * widths persist per-tab only). The app owns the COLUMNS (accessor + `cell` renderers → any custom cell:
- * edit/delete actions, badges, links) and the domain FILTERS (via `filterSlot`, pre-filtering `data`).
+ * component covering: multi-column sort (shift-click to add, with priority badges), draggable column
+ * widths, drag-to-reorder columns, show/hide columns, global search, an app filter slot, and pagination
+ * — with the whole view (sort / visible columns / order / widths / page / size / search) persisted to
+ * sessionStorage AND mirrored to the URL (shareable + survives reload). The app owns the COLUMNS
+ * (accessor + `cell` renderers → any custom cell: edit/delete actions, badges, links) and the domain
+ * FILTERS (via `filterSlot`, pre-filtering `data`).
+ *
+ * Layout: real columns keep EXACT pixel widths (so resize is precise + persists); a trailing auto-width
+ * spacer absorbs the slack so the table fills its container without stretching the columns, and it
+ * scrolls horizontally once the columns exceed the width. Cell content truncates to one line.
  *
  * ⚠️ Needs the shadcn primitives it imports (table, button, dropdown-menu, input) + `data-pagination`,
  * and `@tanstack/react-table`. A leading string `header` is used as the column's show/hide label unless
@@ -218,6 +234,7 @@ export function DataTable<T>({
   countNoun = 'dòng',
   enableMultiSort = true,
   enableResizing = true,
+  enableReordering = true,
 }: DataTableProps<T>) {
   'use no memo'; // TanStack's useReactTable returns fresh functions each render — opt out of React Compiler memoization (official guidance); the table does its own memoization internally.
   const up = urlPrefix ?? `${persistKey}.`;
@@ -226,11 +243,15 @@ export function DataTable<T>({
   const defaultVisibility = useMemo<VisibilityState>(() => {
     const v: VisibilityState = {};
     for (const c of columns) {
-      const id = (c.id ?? (c as { accessorKey?: string }).accessorKey) as string | undefined;
+      const id = colId(c as ColumnDef<unknown, unknown>);
       if (id && (c.meta as DataTableColumnMeta | undefined)?.defaultHidden) v[id] = false;
     }
     return v;
   }, [columns]);
+  const defaultOrder = useMemo<ColumnOrderState>(
+    () => columns.map((c) => colId(c as ColumnDef<unknown, unknown>)),
+    [columns],
+  );
 
   const [sorting, setSorting] = usePersisted<SortingState>(
     `${persistKey}.sort`,
@@ -242,6 +263,9 @@ export function DataTable<T>({
     defaultVisibility,
     `${up}cols`,
   );
+  // Column order + widths are personal LAYOUT prefs → sessionStorage only (survives F5 in-tab), NOT
+  // mirrored to the URL (verbose + not really "navigation"). Sort/filter/search/page/size DO (shareable).
+  const [order, setOrder] = usePersisted<ColumnOrderState>(`${persistKey}.order`, defaultOrder);
   const [sizing, setSizing] = usePersisted<ColumnSizingState>(`${persistKey}.w`, EMPTY_SIZING);
   const [globalFilter, setGlobalFilter] = usePersisted<string>(
     `${persistKey}.q`,
@@ -255,10 +279,7 @@ export function DataTable<T>({
     `${up}size`,
   );
 
-  const pagination = useMemo<PaginationState>(
-    () => ({ pageIndex, pageSize }),
-    [pageIndex, pageSize],
-  );
+  const pagination = useMemo<PaginationState>(() => ({ pageIndex, pageSize }), [pageIndex, pageSize]);
   const setPagination = useCallback(
     (updater: SetStateAction<PaginationState>) => {
       const next = typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater;
@@ -275,6 +296,7 @@ export function DataTable<T>({
     state: {
       sorting,
       columnVisibility: visibility,
+      columnOrder: order,
       columnSizing: sizing,
       globalFilter,
       pagination,
@@ -282,6 +304,7 @@ export function DataTable<T>({
     getRowId,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setVisibility,
+    onColumnOrderChange: setOrder,
     onColumnSizingChange: setSizing,
     onGlobalFilterChange: (u) => {
       setGlobalFilter(u as string);
@@ -299,12 +322,35 @@ export function DataTable<T>({
     autoResetPageIndex: false, // we manage page resets explicitly (filter/search) to avoid surprises
   });
 
+  // Native drag-to-reorder. `insert BEFORE the drop target` keeps a non-reorderable trailing column
+  // (e.g. actions) pinned last: it has no grip so it's never dragged, and dropping onto it lands before it.
+  const dragCol = useRef<string | null>(null);
+  const reorder = useCallback(
+    (targetId: string) => {
+      const from = dragCol.current;
+      dragCol.current = null;
+      if (!from || from === targetId) return;
+      setOrder((prev) => {
+        const next = prev.length ? [...prev] : defaultOrder;
+        const fi = next.indexOf(from);
+        if (fi < 0) return prev;
+        next.splice(fi, 1);
+        const ti = next.indexOf(targetId);
+        next.splice(ti < 0 ? next.length : ti, 0, from);
+        return next;
+      });
+    },
+    [setOrder, defaultOrder],
+  );
+
   const filteredCount = table.getFilteredRowModel().rows.length;
   const rows = table.getRowModel().rows;
   const pageCount = table.getPageCount();
   const safePageIndex = Math.min(pageIndex, Math.max(0, pageCount - 1));
   const start = safePageIndex * pageSize;
   const hideableColumns = table.getAllColumns().filter((c) => c.getCanHide());
+  const canReorder = (c: Column<T, unknown>) =>
+    enableReordering && (c.columnDef.meta as DataTableColumnMeta | undefined)?.noReorder !== true;
 
   return (
     <div className="space-y-4">
@@ -382,9 +428,9 @@ export function DataTable<T>({
         </div>
       ) : (
         <>
-          {/* min-width (not a hard width) so the table FILLS the container when its columns are
-              narrower than it, and only scrolls once they exceed it. The Table primitive already wraps
-              itself in an overflow-x-auto container, so no extra wrapper is needed. */}
+          {/* w-full + min-width(totalSize): real columns keep their EXACT px widths; a trailing auto
+              spacer eats the slack so the table fills without stretching columns (and scrolls once the
+              columns exceed the width). The Table primitive supplies its own overflow-x-auto container. */}
           <Table className="table-fixed" style={{ minWidth: table.getTotalSize() }}>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
@@ -397,6 +443,7 @@ export function DataTable<T>({
                       sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ChevronsUpDown;
                     // With ≥2 sorts, show each column's 1-based priority so the order is legible.
                     const showRank = sorting.length > 1 && sorted;
+                    const reorderable = canReorder(header.column);
                     return (
                       <TableHead
                         key={header.id}
@@ -409,30 +456,56 @@ export function DataTable<T>({
                               ? 'descending'
                               : undefined
                         }
+                        onDragOver={reorderable ? (e) => e.preventDefault() : undefined}
+                        onDrop={reorderable ? () => reorder(header.column.id) : undefined}
                       >
-                        {header.isPlaceholder ? null : canSort ? (
-                          <button
-                            type="button"
-                            onClick={header.column.getToggleSortingHandler()}
-                            className={cn(
-                              'flex items-center gap-1 transition-colors hover:text-foreground',
-                              sorted && 'text-foreground',
-                            )}
-                            title="Bấm để sắp xếp · giữ Shift để thêm cột phụ"
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            <SortIcon
-                              className={cn('size-3.5', sorted ? 'opacity-100' : 'opacity-40')}
-                              aria-hidden
-                            />
-                            {showRank && (
-                              <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
-                                {header.column.getSortIndex() + 1}
+                        {header.isPlaceholder ? null : (
+                          <div className="flex items-center gap-1">
+                            {reorderable && (
+                              <span
+                                draggable
+                                onDragStart={() => (dragCol.current = header.column.id)}
+                                onDragEnd={() => (dragCol.current = null)}
+                                role="button"
+                                aria-label="Kéo để đổi vị trí cột"
+                                title="Kéo để đổi vị trí cột"
+                                className="-ml-1 shrink-0 cursor-grab text-muted-foreground/40 hover:text-muted-foreground active:cursor-grabbing"
+                              >
+                                <GripVertical className="size-3.5" aria-hidden />
                               </span>
                             )}
-                          </button>
-                        ) : (
-                          flexRender(header.column.columnDef.header, header.getContext())
+                            {canSort ? (
+                              <button
+                                type="button"
+                                onClick={header.column.getToggleSortingHandler()}
+                                className={cn(
+                                  'flex min-w-0 items-center gap-1 transition-colors hover:text-foreground',
+                                  sorted && 'text-foreground',
+                                )}
+                                title="Bấm để sắp xếp · giữ Shift + bấm để thêm cột phụ"
+                              >
+                                <span className="truncate">
+                                  {flexRender(header.column.columnDef.header, header.getContext())}
+                                </span>
+                                <SortIcon
+                                  className={cn(
+                                    'size-3.5 shrink-0',
+                                    sorted ? 'opacity-100' : 'opacity-40',
+                                  )}
+                                  aria-hidden
+                                />
+                                {showRank && (
+                                  <span className="shrink-0 text-[10px] font-semibold text-muted-foreground tabular-nums">
+                                    {header.column.getSortIndex() + 1}
+                                  </span>
+                                )}
+                              </button>
+                            ) : (
+                              <span className="truncate">
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                              </span>
+                            )}
+                          </div>
                         )}
                         {header.column.getCanResize() && (
                           <span
@@ -450,6 +523,8 @@ export function DataTable<T>({
                       </TableHead>
                     );
                   })}
+                  {/* auto-width spacer so the real columns keep exact widths + the table still fills */}
+                  <TableHead aria-hidden className="w-auto p-0" />
                 </TableRow>
               ))}
             </TableHeader>
@@ -461,13 +536,17 @@ export function DataTable<T>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className={cn('overflow-hidden', meta?.cellClassName)}
+                        className={meta?.cellClassName}
                         style={{ width: cell.column.getSize() }}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {/* one-line truncation so a narrowed / long cell never breaks the row height */}
+                        <div className="truncate">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
                       </TableCell>
                     );
                   })}
+                  <TableCell aria-hidden className="p-0" />
                 </TableRow>
               ))}
             </TableBody>
