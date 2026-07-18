@@ -253,6 +253,30 @@
           "target": "components/breadcrumbs.tsx"
         }
       ]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:component",
+      "title": "Data Table",
+      "description": "Bảng CRUD config-driven trên nền TanStack Table: multi-sort (Shift-click), kéo giãn cột, ẩn/hiện cột, tìm kiếm toàn cục, slot bộ lọc, phân trang — cả khung nhìn lưu vào sessionStorage + đồng bộ URL. App cấp columns (cell tuỳ ý: sửa/xóa/badge) + bộ lọc.",
+      "dependencies": [
+        "@tanstack/react-table",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "table",
+        "button",
+        "dropdown-menu",
+        "input",
+        "data-pagination"
+      ],
+      "files": [
+        {
+          "path": "registry/thiengthb/data-table.tsx",
+          "type": "registry:component",
+          "target": "components/data-table.tsx"
+        }
+      ]
     }
   ]
 }
