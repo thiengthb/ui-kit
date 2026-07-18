@@ -8,7 +8,9 @@
       "type": "registry:ui",
       "title": "Truncate",
       "description": "Cắt 1 dòng thông minh — chỉ bật tooltip khi chữ thật sự tràn.",
-      "registryDependencies": ["tooltip"],
+      "registryDependencies": [
+        "tooltip"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/truncate.tsx",
@@ -22,7 +24,9 @@
       "type": "registry:component",
       "title": "Empty State",
       "description": "Trạng thái rỗng dùng chung: viền nét đứt + icon + tiêu đề + mô tả + action.",
-      "dependencies": ["lucide-react"],
+      "dependencies": [
+        "lucide-react"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/empty-state.tsx",
@@ -36,7 +40,9 @@
       "type": "registry:component",
       "title": "Icon Tooltip",
       "description": "Tooltip read-only cho nút-icon — thay mọi title=. Nội dung ngắn khi hover/focus.",
-      "registryDependencies": ["tooltip"],
+      "registryDependencies": [
+        "tooltip"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/icon-tooltip.tsx",
@@ -50,8 +56,12 @@
       "type": "registry:component",
       "title": "Info Hint",
       "description": "Icon ⓘ mở Popover khi bấm/chạm — thay mô tả dài, hợp cảm ứng + a11y.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["popover"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "popover"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/info-hint.tsx",
@@ -65,8 +75,12 @@
       "type": "registry:component",
       "title": "Info Tooltip",
       "description": "Icon ⓘ hiện mô tả bằng tooltip khi hover/focus — bản minimal, tự wrap + clamp; dùng cho tiêu đề/nhãn.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["tooltip"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "tooltip"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/info-tooltip.tsx",
@@ -93,7 +107,9 @@
       "type": "registry:component",
       "title": "Field",
       "description": "Bọc nhãn + control + hint/info cho form; ô fill grid sm:grid-cols-2.",
-      "registryDependencies": ["@thiengthb/info-tooltip"],
+      "registryDependencies": [
+        "@thiengthb/info-tooltip"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/field.tsx",
@@ -107,8 +123,15 @@
       "type": "registry:ui",
       "title": "Date Picker",
       "description": "Popover + Calendar, value chuỗi 'YYYY-MM-DD' địa phương. Helper ngày nội tuyến.",
-      "dependencies": ["date-fns", "lucide-react"],
-      "registryDependencies": ["button", "calendar", "popover"],
+      "dependencies": [
+        "date-fns",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "calendar",
+        "popover"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/date-picker.tsx",
@@ -122,8 +145,14 @@
       "type": "registry:ui",
       "title": "Time Picker",
       "description": "Input gõ tay + Popover mốc giờ (15′), value 'HH:MM' địa phương. Helper giờ nội tuyến.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["input", "popover", "scroll-area"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "input",
+        "popover",
+        "scroll-area"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/time-picker.tsx",
@@ -137,7 +166,9 @@
       "type": "registry:component",
       "title": "Skeletons",
       "description": "Bộ skeleton (PageHeader/Card/List/Grid) khớp bộ card chuẩn — cho loading.tsx.",
-      "registryDependencies": ["skeleton"],
+      "registryDependencies": [
+        "skeleton"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/skeletons.tsx",
@@ -151,8 +182,13 @@
       "type": "registry:ui",
       "title": "Data Pagination",
       "description": "Điều khiển phân trang controlled (page/pageCount/onPageChange) + cửa sổ trang dấu … + bộ chọn số dòng/trang (tuỳ chọn); dùng cho phân trang client hoặc server.",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["button", "select"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "select"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/data-pagination.tsx",
@@ -166,8 +202,12 @@
       "type": "registry:component",
       "title": "Page Header",
       "description": "Header trang đồng nhất: eyebrow + h1 + mô tả (tooltip ⓘ) + action + back-link. ⚠️ Next-only (next/link).",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["@thiengthb/info-tooltip"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@thiengthb/info-tooltip"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/page-header.tsx",
@@ -181,13 +221,36 @@
       "type": "registry:component",
       "title": "App Sidebar",
       "description": "Sidebar điều hướng config-driven trên nền shadcn sidebar: thu gọn thành thanh icon (⌘/Ctrl+B), tự mở Sheet trên mobile, nhớ trạng thái qua cookie, tooltip khi thu gọn. Nhận brand + groups (icon lucide) + footer. ⚠️ Next-only (next/link + navigation).",
-      "dependencies": ["lucide-react"],
-      "registryDependencies": ["sidebar"],
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "sidebar"
+      ],
       "files": [
         {
           "path": "registry/thiengthb/app-sidebar.tsx",
           "type": "registry:component",
           "target": "components/app-sidebar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumbs",
+      "type": "registry:component",
+      "title": "Breadcrumbs",
+      "description": "Breadcrumb điều hướng cha→con: mỗi mốc có icon + mô tả (tooltip); mốc cuối là trang hiện tại.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/thiengthb/breadcrumbs.tsx",
+          "type": "registry:component",
+          "target": "components/breadcrumbs.tsx"
         }
       ]
     }
