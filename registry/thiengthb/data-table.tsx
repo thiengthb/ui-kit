@@ -4,6 +4,7 @@ import {
   useCallback,
   useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
   type Dispatch,
   type ReactNode,
@@ -21,11 +22,13 @@ import {
   type ColumnOrderState,
   type ColumnSizingState,
   type PaginationState,
+  type RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ChevronsUpDown, Columns3, GripVertical, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -198,13 +201,25 @@ export interface DataTableProps<T> {
   enableResizing?: boolean;
   /** Drag-to-reorder columns (a grip handle appears on each header). Default true. */
   enableReordering?: boolean;
+  /** Add a leading checkbox column for multi-row selection (needs a stable `getRowId`). Selection is
+   * ephemeral (never persisted) and keyed by row id so it survives sort/filter/paginate. Default false. */
+  enableRowSelection?: boolean;
+  /** Add a leading ordinal ("STT") column numbering rows by their position in the current view. Default false. */
+  enableRowNumbers?: boolean;
+  /** Header text for the ordinal column. Default "STT". */
+  rowNumberHeader?: string;
+  /** Rendered in a bar above the table while ≥1 row is selected — the app supplies the actions (e.g. a
+   * bulk-delete button). Receives the selected originals + a `clearSelection` callback. */
+  bulkActions?: (selectedRows: T[], clearSelection: () => void) => ReactNode;
 }
 
 /**
  * A batteries-included, headless-backed (TanStack Table) data table for CRUD screens. One config-driven
  * component covering: multi-column sort (shift-click to add, with priority badges), draggable column
- * widths, drag-to-reorder columns, show/hide columns, global search, an app filter slot, and pagination
- * — with the whole view (sort / visible columns / order / widths / page / size / search) persisted to
+ * widths, drag-to-reorder columns, show/hide columns, global search, an app filter slot, an optional
+ * leading ordinal ("STT") column + multi-row selection with an app-supplied bulk-action bar, and
+ * pagination — with the whole view (sort / visible columns / order / widths / page / size / search)
+ * persisted to
  * sessionStorage AND mirrored to the URL (shareable + survives reload). The app owns the COLUMNS
  * (accessor + `cell` renderers → any custom cell: edit/delete actions, badges, links) and the domain
  * FILTERS (via `filterSlot`, pre-filtering `data`).
@@ -235,6 +250,10 @@ export function DataTable<T>({
   enableMultiSort = true,
   enableResizing = true,
   enableReordering = true,
+  enableRowSelection = false,
+  enableRowNumbers = false,
+  rowNumberHeader = 'STT',
+  bulkActions,
 }: DataTableProps<T>) {
   'use no memo'; // TanStack's useReactTable returns fresh functions each render — opt out of React Compiler memoization (official guidance); the table does its own memoization internally.
   const up = urlPrefix ?? `${persistKey}.`;
@@ -279,7 +298,14 @@ export function DataTable<T>({
     `${up}size`,
   );
 
-  const pagination = useMemo<PaginationState>(() => ({ pageIndex, pageSize }), [pageIndex, pageSize]);
+  // Row selection is EPHEMERAL (not persisted) — a shared link shouldn't carry a stale selection.
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const clearSelection = useCallback(() => setRowSelection({}), []);
+
+  const pagination = useMemo<PaginationState>(
+    () => ({ pageIndex, pageSize }),
+    [pageIndex, pageSize],
+  );
   const setPagination = useCallback(
     (updater: SetStateAction<PaginationState>) => {
       const next = typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater;
@@ -300,8 +326,11 @@ export function DataTable<T>({
       columnSizing: sizing,
       globalFilter,
       pagination,
+      rowSelection,
     },
     getRowId,
+    enableRowSelection,
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setVisibility,
     onColumnOrderChange: setOrder,
@@ -351,6 +380,10 @@ export function DataTable<T>({
   const hideableColumns = table.getAllColumns().filter((c) => c.getCanHide());
   const canReorder = (c: Column<T, unknown>) =>
     enableReordering && (c.columnDef.meta as DataTableColumnMeta | undefined)?.noReorder !== true;
+  // Selected originals across ALL pages (selection is keyed by row id, so it spans pagination).
+  const selectedRows = enableRowSelection
+    ? table.getSelectedRowModel().rows.map((r) => r.original)
+    : [];
 
   return (
     <div className="space-y-4">
@@ -422,6 +455,18 @@ export function DataTable<T>({
         {actionSlot && <div className="sm:ml-auto">{actionSlot}</div>}
       </div>
 
+      {enableRowSelection && bulkActions && selectedRows.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-md border border-border/70 bg-muted/40 px-3 py-2 text-sm">
+          <span className="font-medium">Đã chọn {selectedRows.length}</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={clearSelection}>
+              Bỏ chọn
+            </Button>
+            {bulkActions(selectedRows, clearSelection)}
+          </div>
+        </div>
+      )}
+
       {rows.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border/70 p-8 text-center text-sm text-muted-foreground">
           {emptyMessage}
@@ -435,6 +480,26 @@ export function DataTable<T>({
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
                 <TableRow key={hg.id}>
+                  {enableRowSelection && (
+                    <TableHead style={{ width: 44 }} className="px-2">
+                      <Checkbox
+                        checked={
+                          table.getIsAllPageRowsSelected()
+                            ? true
+                            : table.getIsSomePageRowsSelected()
+                              ? 'indeterminate'
+                              : false
+                        }
+                        onCheckedChange={(v) => table.toggleAllPageRowsSelected(v === true)}
+                        aria-label="Chọn tất cả dòng trên trang"
+                      />
+                    </TableHead>
+                  )}
+                  {enableRowNumbers && (
+                    <TableHead style={{ width: 52 }} className="text-muted-foreground">
+                      {rowNumberHeader}
+                    </TableHead>
+                  )}
                   {hg.headers.map((header) => {
                     const meta = header.column.columnDef.meta as DataTableColumnMeta | undefined;
                     const canSort = header.column.getCanSort();
@@ -529,8 +594,22 @@ export function DataTable<T>({
               ))}
             </TableHeader>
             <TableBody>
-              {rows.map((row) => (
+              {rows.map((row, i) => (
                 <TableRow key={row.id} className={rowClassName?.(row.original)}>
+                  {enableRowSelection && (
+                    <TableCell style={{ width: 44 }} className="px-2">
+                      <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(v) => row.toggleSelected(v === true)}
+                        aria-label="Chọn dòng"
+                      />
+                    </TableCell>
+                  )}
+                  {enableRowNumbers && (
+                    <TableCell style={{ width: 52 }} className="text-muted-foreground tabular-nums">
+                      {start + i + 1}
+                    </TableCell>
+                  )}
                   {row.getVisibleCells().map((cell) => {
                     const meta = cell.column.columnDef.meta as DataTableColumnMeta | undefined;
                     return (

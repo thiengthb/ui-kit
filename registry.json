@@ -258,7 +258,7 @@
       "name": "data-table",
       "type": "registry:component",
       "title": "Data Table",
-      "description": "Bảng CRUD config-driven trên nền TanStack Table: multi-sort (Shift-click), kéo giãn cột, ẩn/hiện cột, tìm kiếm toàn cục, slot bộ lọc, phân trang — cả khung nhìn lưu vào sessionStorage + đồng bộ URL. App cấp columns (cell tuỳ ý: sửa/xóa/badge) + bộ lọc.",
+      "description": "Bảng CRUD config-driven trên nền TanStack Table: multi-sort (Shift-click), kéo giãn cột, ẩn/hiện cột, tìm kiếm toàn cục, slot bộ lọc, cột số thứ tự (STT), chọn nhiều dòng + thanh hành động hàng loạt (app cấp), phân trang — cả khung nhìn lưu vào sessionStorage + đồng bộ URL. App cấp columns (cell tuỳ ý: sửa/xóa/badge) + bộ lọc.",
       "dependencies": [
         "@tanstack/react-table",
         "lucide-react"
@@ -266,6 +266,7 @@
       "registryDependencies": [
         "table",
         "button",
+        "checkbox",
         "dropdown-menu",
         "input",
         "data-pagination"
