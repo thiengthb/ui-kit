@@ -261,8 +261,7 @@ export function DataTable<T>({
   );
   const setPagination = useCallback(
     (updater: SetStateAction<PaginationState>) => {
-      const next =
-        typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater;
+      const next = typeof updater === 'function' ? updater({ pageIndex, pageSize }) : updater;
       if (next.pageIndex !== pageIndex) setPageIndex(next.pageIndex);
       if (next.pageSize !== pageSize) setPageSize(next.pageSize);
     },
@@ -273,7 +272,13 @@ export function DataTable<T>({
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnVisibility: visibility, columnSizing: sizing, globalFilter, pagination },
+    state: {
+      sorting,
+      columnVisibility: visibility,
+      columnSizing: sizing,
+      globalFilter,
+      pagination,
+    },
     getRowId,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setVisibility,
@@ -310,7 +315,13 @@ export function DataTable<T>({
               <DropdownMenuTrigger asChild>
                 {/* Icon-only at rest; the label slides in on hover / focus / while open (matches the
                     app's other toolbar actions). Button already carries the `group/button` class. */}
-                <Button variant="outline" size="sm" className="gap-0" aria-label="Hiển thị cột" title="Hiển thị cột">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-0"
+                  aria-label="Hiển thị cột"
+                  title="Hiển thị cột"
+                >
                   <Columns3 className="size-4 shrink-0" aria-hidden />
                   <span
                     aria-hidden
@@ -327,7 +338,9 @@ export function DataTable<T>({
                   const meta = column.columnDef.meta as DataTableColumnMeta | undefined;
                   const label =
                     meta?.label ??
-                    (typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id);
+                    (typeof column.columnDef.header === 'string'
+                      ? column.columnDef.header
+                      : column.id);
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
@@ -369,94 +382,96 @@ export function DataTable<T>({
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <Table className="table-fixed" style={{ width: table.getTotalSize() }}>
-              <TableHeader>
-                {table.getHeaderGroups().map((hg) => (
-                  <TableRow key={hg.id}>
-                    {hg.headers.map((header) => {
-                      const meta = header.column.columnDef.meta as DataTableColumnMeta | undefined;
-                      const canSort = header.column.getCanSort();
-                      const sorted = header.column.getIsSorted();
-                      const SortIcon = sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ChevronsUpDown;
-                      // With ≥2 sorts, show each column's 1-based priority so the order is legible.
-                      const showRank = sorting.length > 1 && sorted;
-                      return (
-                        <TableHead
-                          key={header.id}
-                          className={cn('relative', meta?.headClassName)}
-                          style={{ width: header.getSize() }}
-                          aria-sort={
-                            sorted === 'asc'
-                              ? 'ascending'
-                              : sorted === 'desc'
-                                ? 'descending'
-                                : undefined
-                          }
-                        >
-                          {header.isPlaceholder ? null : canSort ? (
-                            <button
-                              type="button"
-                              onClick={header.column.getToggleSortingHandler()}
-                              className={cn(
-                                'flex items-center gap-1 transition-colors hover:text-foreground',
-                                sorted && 'text-foreground',
-                              )}
-                              title="Bấm để sắp xếp · giữ Shift để thêm cột phụ"
-                            >
-                              {flexRender(header.column.columnDef.header, header.getContext())}
-                              <SortIcon
-                                className={cn('size-3.5', sorted ? 'opacity-100' : 'opacity-40')}
-                                aria-hidden
-                              />
-                              {showRank && (
-                                <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
-                                  {header.column.getSortIndex() + 1}
-                                </span>
-                              )}
-                            </button>
-                          ) : (
-                            flexRender(header.column.columnDef.header, header.getContext())
-                          )}
-                          {header.column.getCanResize() && (
-                            <span
-                              onMouseDown={header.getResizeHandler()}
-                              onTouchStart={header.getResizeHandler()}
-                              onClick={(e) => e.stopPropagation()}
-                              role="separator"
-                              aria-orientation="vertical"
-                              className={cn(
-                                'absolute top-0 right-0 h-full w-1.5 cursor-col-resize touch-none select-none hover:bg-border',
-                                header.column.getIsResizing() && 'bg-primary/60',
-                              )}
+          {/* min-width (not a hard width) so the table FILLS the container when its columns are
+              narrower than it, and only scrolls once they exceed it. The Table primitive already wraps
+              itself in an overflow-x-auto container, so no extra wrapper is needed. */}
+          <Table className="table-fixed" style={{ minWidth: table.getTotalSize() }}>
+            <TableHeader>
+              {table.getHeaderGroups().map((hg) => (
+                <TableRow key={hg.id}>
+                  {hg.headers.map((header) => {
+                    const meta = header.column.columnDef.meta as DataTableColumnMeta | undefined;
+                    const canSort = header.column.getCanSort();
+                    const sorted = header.column.getIsSorted();
+                    const SortIcon =
+                      sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ChevronsUpDown;
+                    // With ≥2 sorts, show each column's 1-based priority so the order is legible.
+                    const showRank = sorting.length > 1 && sorted;
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={cn('relative', meta?.headClassName)}
+                        style={{ width: header.getSize() }}
+                        aria-sort={
+                          sorted === 'asc'
+                            ? 'ascending'
+                            : sorted === 'desc'
+                              ? 'descending'
+                              : undefined
+                        }
+                      >
+                        {header.isPlaceholder ? null : canSort ? (
+                          <button
+                            type="button"
+                            onClick={header.column.getToggleSortingHandler()}
+                            className={cn(
+                              'flex items-center gap-1 transition-colors hover:text-foreground',
+                              sorted && 'text-foreground',
+                            )}
+                            title="Bấm để sắp xếp · giữ Shift để thêm cột phụ"
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            <SortIcon
+                              className={cn('size-3.5', sorted ? 'opacity-100' : 'opacity-40')}
+                              aria-hidden
                             />
-                          )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id} className={rowClassName?.(row.original)}>
-                    {row.getVisibleCells().map((cell) => {
-                      const meta = cell.column.columnDef.meta as DataTableColumnMeta | undefined;
-                      return (
-                        <TableCell
-                          key={cell.id}
-                          className={cn('overflow-hidden', meta?.cellClassName)}
-                          style={{ width: cell.column.getSize() }}
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                            {showRank && (
+                              <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
+                                {header.column.getSortIndex() + 1}
+                              </span>
+                            )}
+                          </button>
+                        ) : (
+                          flexRender(header.column.columnDef.header, header.getContext())
+                        )}
+                        {header.column.getCanResize() && (
+                          <span
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            onClick={(e) => e.stopPropagation()}
+                            role="separator"
+                            aria-orientation="vertical"
+                            className={cn(
+                              'absolute top-0 right-0 h-full w-1.5 cursor-col-resize touch-none select-none hover:bg-border',
+                              header.column.getIsResizing() && 'bg-primary/60',
+                            )}
+                          />
+                        )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.id} className={rowClassName?.(row.original)}>
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = cell.column.columnDef.meta as DataTableColumnMeta | undefined;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn('overflow-hidden', meta?.cellClassName)}
+                        style={{ width: cell.column.getSize() }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
           <div className="flex flex-col-reverse items-start justify-between gap-3 sm:flex-row sm:items-center">
             <span className="text-xs text-muted-foreground">
