@@ -23,7 +23,7 @@
       "name": "empty-state",
       "type": "registry:component",
       "title": "Empty State",
-      "description": "Trạng thái rỗng dùng chung: viền nét đứt + icon + tiêu đề + mô tả + action.",
+      "description": "Trạng thái rỗng dùng chung: viền nét đứt + icon + tiêu đề + mô tả + action, hoặc truyền children khi cần nội dung tự do.",
       "dependencies": [
         "lucide-react"
       ],
