@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "breadcrumbs",
+  "title": "Breadcrumbs",
+  "description": "Breadcrumb điều hướng cha→con: mỗi mốc có icon + mô tả (tooltip); mốc cuối là trang hiện tại.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "registry/thiengthb/breadcrumbs.tsx",
+      "content": "'use client';\n\nimport Link from 'next/link';\nimport { ChevronRight, type LucideIcon } from 'lucide-react';\nimport { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';\nimport { cn } from '@/lib/utils';\n\n/**\n * One node in a breadcrumb trail. Every crumb carries an icon AND a description (shown as a\n * hover/focus tooltip) so the trail is legible at a glance and each step explains where it leads.\n * The LAST crumb is the current page: it renders as plain (aria-current) text with no link even if\n * an `href` is supplied.\n */\nexport interface Crumb {\n  label: string;\n  /** Target route. Omitted (or ignored on the last crumb) → non-navigating current page. */\n  href?: string;\n  /** lucide icon — required so every step is visually anchored. */\n  icon: LucideIcon;\n  /** One-line explanation of the destination — surfaced as a tooltip. */\n  description: string;\n}\n\n/**\n * Config-driven breadcrumb trail: pass an ordered `Crumb[]` from root → current. Renders an\n * accessible `nav > ol`, each item = icon + label (+ description tooltip), separated by a chevron;\n * intermediate crumbs link, the final one marks the current page. The app owns the trail (which\n * routes, labels, icons) — this only renders it, so the same component serves every page.\n *\n * ⚠️ NEXT-ONLY: uses `next/link`. In a Vite SPA, swap it for react-router's <Link>. Needs a\n * `TooltipProvider` ancestor (usually in the root layout).\n */\nexport function Breadcrumbs({ items, className }: { items: Crumb[]; className?: string }) {\n  if (items.length === 0) return null;\n  return (\n    <nav aria-label=\"Breadcrumb\" className={className}>\n      <ol className=\"flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted-foreground\">\n        {items.map((item, i) => {\n          const last = i === items.length - 1;\n          const Icon = item.icon;\n          const inner = (\n            <span\n              className={cn(\n                'inline-flex items-center gap-1.5',\n                last && 'font-medium text-foreground',\n              )}\n            >\n              <Icon className=\"size-4 shrink-0\" aria-hidden />\n              <span className=\"max-w-[18ch] truncate\">{item.label}</span>\n            </span>\n          );\n          return (\n            <li key={`${item.label}-${i}`} className=\"flex items-center gap-1.5\">\n              <Tooltip>\n                <TooltipTrigger asChild>\n                  {item.href && !last ? (\n                    <Link\n                      href={item.href}\n                      className=\"inline-flex items-center rounded-md transition-colors hover:text-foreground\"\n                    >\n                      {inner}\n                    </Link>\n                  ) : (\n                    <span aria-current={last ? 'page' : undefined}>{inner}</span>\n                  )}\n                </TooltipTrigger>\n                <TooltipContent className=\"max-w-xs\">{item.description}</TooltipContent>\n              </Tooltip>\n              {!last && (\n                <ChevronRight className=\"size-3.5 shrink-0 text-muted-foreground/50\" aria-hidden />\n              )}\n            </li>\n          );\n        })}\n      </ol>\n    </nav>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/breadcrumbs.tsx"
+    }
+  ],
+  "type": "registry:component"
+}
