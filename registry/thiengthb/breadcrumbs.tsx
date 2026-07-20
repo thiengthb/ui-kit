@@ -27,7 +27,7 @@ export interface Crumb {
  * intermediate crumbs link, the final one marks the current page. The app owns the trail (which
  * routes, labels, icons) — this only renders it, so the same component serves every page.
  *
- * ⚠️ NEXT-ONLY: uses `next/link`. In a Vite SPA, swap it for react-router's <Link>. Needs a
+ * NOTE - NEXT-ONLY: uses `next/link`. In a Vite SPA, swap it for react-router's <Link>. Needs a
  * `TooltipProvider` ancestor (usually in the root layout).
  */
 export function Breadcrumbs({ items, className }: { items: Crumb[]; className?: string }) {

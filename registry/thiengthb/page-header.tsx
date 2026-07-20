@@ -26,7 +26,7 @@ interface PageHeaderProps {
  * Shared page header: eyebrow + h1 + description + right-aligned action, with an optional back-link.
  * Every page uses this same component so title rhythm/size stays consistent.
  *
- * ⚠️ NEXT-ONLY: uses `next/link`. In a Vite SPA, replace it with react-router's <Link>.
+ * NOTE - NEXT-ONLY: uses `next/link`. In a Vite SPA, replace it with react-router's <Link>.
  */
 export function PageHeader({
   eyebrow,

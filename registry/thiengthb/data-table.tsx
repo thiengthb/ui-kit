@@ -228,7 +228,7 @@ export interface DataTableProps<T> {
  * spacer absorbs the slack so the table fills its container without stretching the columns, and it
  * scrolls horizontally once the columns exceed the width. Cell content truncates to one line.
  *
- * ⚠️ Needs the shadcn primitives it imports (table, button, dropdown-menu, input) + `data-pagination`,
+ * NOTE - needs the shadcn primitives it imports (table, button, dropdown-menu, input) + `data-pagination`,
  * and `@tanstack/react-table`. A leading string `header` is used as the column's show/hide label unless
  * `meta.label` is set.
  */

@@ -75,7 +75,7 @@ function isActive(pathname: string, item: AppSidebarItem): boolean {
  * a tooltip per item when collapsed. Drop it inside a `<SidebarProvider>` next to a
  * `<SidebarInset>`; feed it a `brand` + `groups` config so every app wires the same component.
  *
- * ⚠️ NEXT-ONLY: uses `next/link` + `next/navigation`. In a Vite SPA, swap those for react-router.
+ * NOTE - NEXT-ONLY: uses `next/link` + `next/navigation`. In a Vite SPA, swap those for react-router.
  */
 export function AppSidebar({ brand, groups, footer, activePath, className }: AppSidebarProps) {
   const routerPathname = usePathname();

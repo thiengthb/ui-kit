@@ -201,7 +201,7 @@
       "name": "page-header",
       "type": "registry:component",
       "title": "Page Header",
-      "description": "Header trang đồng nhất: eyebrow + h1 + mô tả (tooltip ⓘ) + action + back-link. ⚠️ Next-only (next/link).",
+      "description": "Header trang đồng nhất: eyebrow + h1 + mô tả (tooltip ⓘ) + action + back-link. Next-only (next/link).",
       "dependencies": [
         "lucide-react"
       ],
@@ -220,7 +220,7 @@
       "name": "app-sidebar",
       "type": "registry:component",
       "title": "App Sidebar",
-      "description": "Sidebar điều hướng config-driven trên nền shadcn sidebar: thu gọn thành thanh icon (⌘/Ctrl+B), tự mở Sheet trên mobile, nhớ trạng thái qua cookie, tooltip khi thu gọn. Nhận brand + groups (icon lucide) + footer. ⚠️ Next-only (next/link + navigation).",
+      "description": "Sidebar điều hướng config-driven trên nền shadcn sidebar: thu gọn thành thanh icon (⌘/Ctrl+B), tự mở Sheet trên mobile, nhớ trạng thái qua cookie, tooltip khi thu gọn. Nhận brand + groups (icon lucide) + footer. Next-only (next/link + navigation).",
       "dependencies": [
         "lucide-react"
       ],
