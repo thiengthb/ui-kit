@@ -297,6 +297,10 @@ export function DataTable<T>({
     initialPageSize,
     `${up}size`,
   );
+  // STT (ordinal) column visibility — toggled from the "Cột" menu like any real column, but the ordinal
+  // isn't a TanStack column (it's rendered outside the column model), so its show/hide lives here.
+  // sessionStorage-only (a personal layout pref, not shareable state), same as column order/widths.
+  const [showRowNumbers, setShowRowNumbers] = usePersisted<boolean>(`${persistKey}.rownum`, true);
 
   // Row selection is EPHEMERAL (not persisted) — a shared link shouldn't carry a stale selection.
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -378,6 +382,9 @@ export function DataTable<T>({
   const safePageIndex = Math.min(pageIndex, Math.max(0, pageCount - 1));
   const start = safePageIndex * pageSize;
   const hideableColumns = table.getAllColumns().filter((c) => c.getCanHide());
+  // The ordinal column renders only when enabled AND not hidden via the "Cột" menu.
+  const rowNumbers = enableRowNumbers && showRowNumbers;
+  const showColumnMenu = hideableColumns.length > 0 || enableRowNumbers;
   const canReorder = (c: Column<T, unknown>) =>
     enableReordering && (c.columnDef.meta as DataTableColumnMeta | undefined)?.noReorder !== true;
   // Selected originals across ALL pages (selection is keyed by row id, so it spans pagination).
@@ -388,8 +395,25 @@ export function DataTable<T>({
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-2">
-          {hideableColumns.length > 0 && (
+        {searchPlaceholder && (
+          <div className="relative sm:max-w-xs">
+            <Search
+              className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <Input
+              value={globalFilter}
+              onChange={(e) => table.setGlobalFilter(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="pl-8"
+            />
+          </div>
+        )}
+
+        {/* Column + filter controls sit at the far RIGHT (2026-07-21), with the app's action button
+            (e.g. import) OUTERMOST. `sm:ml-auto` pushes the whole group right of the search box. */}
+        <div className="flex items-center gap-2 sm:ml-auto">
+          {showColumnMenu && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 {/* Icon-only at rest; the label slides in on hover / focus / while open (matches the
@@ -410,9 +434,18 @@ export function DataTable<T>({
                   </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Hiển thị trường</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {enableRowNumbers && (
+                  <DropdownMenuCheckboxItem
+                    checked={showRowNumbers}
+                    onCheckedChange={(v) => setShowRowNumbers(v === true)}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    {rowNumberHeader}
+                  </DropdownMenuCheckboxItem>
+                )}
                 {hideableColumns.map((column) => {
                   const meta = column.columnDef.meta as DataTableColumnMeta | undefined;
                   const label =
@@ -435,24 +468,8 @@ export function DataTable<T>({
             </DropdownMenu>
           )}
           {filterSlot}
+          {actionSlot}
         </div>
-
-        {searchPlaceholder && (
-          <div className="relative sm:max-w-xs">
-            <Search
-              className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-              aria-hidden
-            />
-            <Input
-              value={globalFilter}
-              onChange={(e) => table.setGlobalFilter(e.target.value)}
-              placeholder={searchPlaceholder}
-              className="pl-8"
-            />
-          </div>
-        )}
-
-        {actionSlot && <div className="sm:ml-auto">{actionSlot}</div>}
       </div>
 
       {enableRowSelection && bulkActions && selectedRows.length > 0 && (
@@ -495,7 +512,7 @@ export function DataTable<T>({
                       />
                     </TableHead>
                   )}
-                  {enableRowNumbers && (
+                  {rowNumbers && (
                     <TableHead style={{ width: 52 }} className="text-muted-foreground">
                       {rowNumberHeader}
                     </TableHead>
@@ -605,7 +622,7 @@ export function DataTable<T>({
                       />
                     </TableCell>
                   )}
-                  {enableRowNumbers && (
+                  {rowNumbers && (
                     <TableCell style={{ width: 52 }} className="text-muted-foreground tabular-nums">
                       {start + i + 1}
                     </TableCell>
