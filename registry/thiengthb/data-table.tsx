@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -381,6 +382,13 @@ export function DataTable<T>({
   const pageCount = table.getPageCount();
   const safePageIndex = Math.min(pageIndex, Math.max(0, pageCount - 1));
   const start = safePageIndex * pageSize;
+  // Self-heal a stale page: an app-level filter (owned outside this component) can shrink the result
+  // to fewer pages while the stored pageIndex stays high — TanStack then returns an EMPTY page, which
+  // reads as "no results" even though rows match. Clamp the stored index back into range. (autoReset is
+  // off on purpose, so we correct explicitly here instead of resetting to 0 on every data change.)
+  useEffect(() => {
+    if (pageIndex > 0 && pageIndex > pageCount - 1) setPageIndex(Math.max(0, pageCount - 1));
+  }, [pageIndex, pageCount, setPageIndex]);
   const hideableColumns = table.getAllColumns().filter((c) => c.getCanHide());
   // The ordinal column renders only when enabled AND not hidden via the "Cột" menu.
   const rowNumbers = enableRowNumbers && showRowNumbers;
